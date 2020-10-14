@@ -54,7 +54,6 @@ client.connect(err => {
             size: file.size,
             img: Buffer.from(encImg, 'base64')
         };
-        console.log(image, name, email, title, price, description)
     UserServiceCollection.insertOne({image, name, email, title, price, description})
       .then(result => {
         res.send(result.insertedCount > 0)
@@ -95,9 +94,34 @@ client.connect(err => {
 })
 // Show Review in the home page
 app.get('/getReview', (req, res) => {
-  UserReviewCollection.find({})
+  UserReviewCollection.find({}).limit(6)
     .toArray((err, documents) => {
       res.send(documents)
+    })
+})
+// Show AllServices in the home page
+app.get('/getAllServices', (req, res) => {
+  UserServiceCollection.find({})
+    .toArray((err, documents) => {
+      res.send(documents)
+    })
+})
+//  Add Order in the home page
+app.post('/AddService', (req, res) => {
+  const file = req.files.file;
+  const title = req.body.title;
+  const description = req.body.description;
+  const newImg = file.data;
+      const encImg = newImg.toString('base64');
+
+      var image = {
+          contentType: file.mimetype,
+          size: file.size,
+          img: Buffer.from(encImg, 'base64')
+      };
+      ServiceCollection.insertOne({image, title, description})
+    .then(result => {
+      res.send(result.insertedCount > 0)
     })
 })
 
